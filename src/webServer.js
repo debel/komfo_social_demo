@@ -1,4 +1,4 @@
-module.exports = function (config, model) {
+module.exports = function (config, controller) {
     var express = require('express')();
 
     express.get('/', function (req, res) {
@@ -6,14 +6,12 @@ module.exports = function (config, model) {
     });
 
     express.get('/add/:number', function (req, res) {
-        var n = parseInt(req.param('number'), 10);
-        model.latest()
-            .then(function doAddition(latest) {
-                latest = latest || {result: 0};
-                return {result: latest.result + n};
-            })
-            .then(model.insert)
+        controller.addition(req.param('number'))
             .then(res.send.bind(res));
+    });
+
+    express.get('/auth/facebook', function(req, res) {
+        controller.connectToFb(req, res);
     });
 
     return {
