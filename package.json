@@ -2,7 +2,7 @@
   "name": "komfo_demo",
   "version": "0.0.0",
   "description": "a node, mongo and fb graph demo",
-  "main": "webServer.js",
+  "main": "app.js",
   "dependencies": {
     "express": "~4.10.4",
     "fbgraph": "~0.3.0",
