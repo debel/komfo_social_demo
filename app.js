@@ -16,5 +16,5 @@ var model = require('./src/model')(config.mongo),
     });
 
 app.start(function () {
-    console.log('app is running...');
+    console.log('app is running on ' + config.express.port);
 });

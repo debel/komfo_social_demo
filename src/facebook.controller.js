@@ -57,23 +57,24 @@ module.exports = function (config) {
         },
 
     scrapePage = function (req, res) {
+        var page = req.param('page');
         if (!fb.getAccessToken()) {
             console.log('no token. redirecting to login...');
-            returnPath = '/get/' + req.param('number');
+            returnPath = '/get/' + page;
             res.redirect(config.redirect_uri);
             return;
         }
 
-        return request(req.param('number') + '/feed?include_hidden=true')
+        return request(page + '/feed?include_hidden=true')
             .then(res.send.bind(res))
             .catch(function (res) {
-                    res.send.bind(res);
-                    console.log('error!');
-                    });
+                res.send.bind(res);
+                console.log('error!');
+            });
     };
 
     return {
         fbLogin: loginToFb,
-        fbPage: scrapePage,
+        fbPage: scrapePage
     };
 };

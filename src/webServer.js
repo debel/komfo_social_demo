@@ -19,7 +19,7 @@ module.exports = function (config, controllers) {
 
     express.get('/auth/facebook', controllers.facebook.fbLogin);
 
-    express.get('/get/:number', controllers.facebook.fbPage);
+    express.get('/get/:page', controllers.facebook.fbPage);
 
     return {
         start: express.listen.bind(express, config.port)
