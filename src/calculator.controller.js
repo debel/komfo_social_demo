@@ -7,8 +7,8 @@ module.exports = function (model) {
                     return {result: latest.result + n};
                 })
                 .then(model.insert)
-                .catch(function (err){
-                   throw err;
+                .catch(function (err) {
+                    throw err;
                 });
         },
         multiplication = function (number) {
