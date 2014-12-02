@@ -1,0 +1,15 @@
+{
+  "mongo": {
+    "connectionString": "mongodb://localhost/demo"
+  },
+  "express": {
+    "port": 8080
+  },
+  "facebook": {
+    "client_id": "YOUR_APP_ID",
+    "client_secret": "YOUR_APP_SECRET",
+    "scope": "manage_pages,publish_actions",
+    "redirect_uri": "http://192.168.33.10:8080/auth/facebook",
+    "page_id": "YOUR_PAGE_ID"
+  }
+}
