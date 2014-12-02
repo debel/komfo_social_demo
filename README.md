@@ -16,5 +16,5 @@ Also starring node packages:
  - fbgraph
 
 
-The slides for the presentation can be found here <-(no link yet...)
+The slides for the presentation can be found here <- ...
 
