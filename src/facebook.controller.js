@@ -1,24 +1,22 @@
-module.exports = function (config, model) {
+module.exports = function (config) {
     var fb = require('fbgraph'),
         rsvp = require('rsvp'),
-        addition = function (number) {
-            var n = parseInt(number, 10);
-            return model.latest()
-                .then(function doAddition(latest) {
-                    latest = latest || {result: 0};
-                    return {result: latest.result + n};
-                })
-                .then(model.insert);
+        authorize = function (access_token) {
+            return new rsvp.Promise(function (fulfil, reject) {
+                fb.authorize({
+                    client_id: config.client_id,
+                    client_secret: config.client_secret,
+                    redirect_uri: config.redirect_uri,
+                    code: access_token
+                }, function (err, fbRes) {
+                    if (err) {
+                        reject(err);
+                    }
+                    fulfil(fbRes);
+                });
+            });
         },
-        authorizeFbRequest = function (access_token, cb) {
-            fb.authorize({
-                client_id: config.client_id,
-                client_secret: config.client_secret,
-                redirect_uri: config.redirect_uri,
-                code: access_token
-            }, cb.bind(null, fb));
-        },
-        makeFbRequest = function (endpoint) {
+        request = function (endpoint) {
             return new rsvp.Promise(function (fulfil, reject) {
                 fb.get(endpoint, function (err, fbData) {
                     if (err) {
@@ -29,6 +27,7 @@ module.exports = function (config, model) {
                 });
             });
         },
+
         loginToFb = function (req, res) {
             if (!req.query.code) {
                 if (req.query.error) {
@@ -46,23 +45,24 @@ module.exports = function (config, model) {
                 res.redirect('me_and_my_likes');
             }
         },
+
         getFbData = function (req, res) {
             if (!req.query.code) {
                 res.redirect('auth/facebook');
                 return;
             }
 
-            authorizeFbRequest(req.query.code, function (error, fbRes) {
-                rsvp.all([
-                        makeFbRequest('/me'),
-                        makeFbRequest('/me/likes')])
-                    .then(res.send.bind(res))
-                    .catch(res.send.bind(res));
-            });
+            authorize(req.query.code)
+                .then(function () {
+                    return rsvp.all([
+                        request('/me'),
+                        request('/me/likes')])
+                })
+                .then(res.send.bind(res))
+                .catch(res.send.bind(res));
         };
 
     return {
-        addition: addition,
         fbLogin: loginToFb,
         fbData: getFbData
     };

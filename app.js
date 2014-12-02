@@ -2,8 +2,12 @@ var config = require('./config/misho.json'); //change to your own secret config.
 config.express.staticFilesPath = __dirname + '/static/';
 
 var model = require('./src/model')(config.mongo),
-    controller = require('./src/controller')(config.facebook, model),
-    app = require('./src/webServer')(config.express, controller);
+    calculator = require('./src/calculator.controller')(model),
+    facebook = require('./src/facebook.controller')(config.facebook),
+    app = require('./src/webServer')(config.express, {
+        calculator: calculator,
+        facebook: facebook
+    });
 
 app.start(function () {
     console.log('app is running');

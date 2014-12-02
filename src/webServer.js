@@ -1,4 +1,4 @@
-module.exports = function (config, controller) {
+module.exports = function (config, controllers) {
     var express = require('express')();
 
     express.get('/', function (req, res) {
@@ -6,17 +6,18 @@ module.exports = function (config, controller) {
     });
 
     express.get('/add/:number', function (req, res) {
-        controller.addition(req.param('number'))
+        controllers.calculator.addition(req.param('number'))
             .then(res.send.bind(res));
     });
 
-    express.get('/auth/facebook', function(req, res) {
-        controller.fbLogin(req, res);
+    express.get('/multi/:number', function (req, res) {
+        controllers.calculator.multiplication(req.param('number'))
+            .then(res.send.bind(res));
     });
 
-    express.get('/me_and_my_likes', function(req, res) {
-        controller.fbData(req, res);
-    });
+    express.get('/auth/facebook', controllers.facebook.fbLogin);
+
+    express.get('/me_and_my_likes', controllers.facebook.fbData);
 
     return {
         start: express.listen.bind(express, config.port)

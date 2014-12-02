@@ -1,17 +1,20 @@
 module.exports = function (config) {
     var rsvp = require('rsvp'),
         mongoClient = require('mongodb').MongoClient,
-        connectToDB = new rsvp.Promise(function promiseConnectToDB(fulfile, reject) {
+        connectToDB = new rsvp.Promise(
+            function promiseConnectToDB(fulfile, reject) {
             mongoClient.connect(config.connectionString, function dbReady(err, db) {
-                if (err) {
-                    reject(err);
+                if (err != null || db == null) {
+                    reject(err || 'cannot connect to db');
                 }
 
                 fulfile(db);
             });
         }),
+
         latest = function () {
-            return new rsvp.Promise(function promiseGetLatest(fulfil, reject) {
+            return new rsvp.Promise(
+                function promiseGetLatest(fulfil, reject) {
                 connectToDB.then(function dbReady(db) {
                     var coll = db.collection('addition');
                     coll.find().sort({_id: -1}).limit(1)
@@ -24,7 +27,8 @@ module.exports = function (config) {
             });
         },
         insert = function (data) {
-            return new rsvp.Promise(function promiseInsert(fulfil, reject) {
+            return new rsvp.Promise(
+                function promiseInsert(fulfil, reject) {
                 connectToDB.then(function dbReady(db) {
                     var coll = db.collection('addition');
                     coll.insert(data, function (err, item) {
