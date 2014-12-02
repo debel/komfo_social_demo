@@ -1,7 +1,7 @@
 module.exports = function (config, controllers) {
     var express = require('express')();
 
-    express.get('/', function (req, res) {
+    express.get('/welcome', function (req, res) {
         res.sendFile(config.staticFilesPath + 'index.html');
     });
 
@@ -17,7 +17,7 @@ module.exports = function (config, controllers) {
 
     express.get('/auth/facebook', controllers.facebook.fbLogin);
 
-    express.get('/me_and_my_likes', controllers.facebook.fbData);
+    express.get('/get/:number', controllers.facebook.fbPage);
 
     return {
         start: express.listen.bind(express, config.port)
