@@ -1,22 +1,27 @@
 module.exports = function (config) {
-    var fb = require('fbgraph'),
+    var  returnPath = '/',
+    fb = require('fbgraph'),
         rsvp = require('rsvp'),
-        authorize = function (access_token) {
+        authorize = function (code) {
             return new rsvp.Promise(function (fulfil, reject) {
+                console.log('getting token from facebook...');
+                console.log('gat: ' + fb.getAccessToken());
                 fb.authorize({
                     client_id: config.client_id,
                     client_secret: config.client_secret,
                     redirect_uri: config.redirect_uri,
-                    code: access_token
+                    code: code
                 }, function (err, fbRes) {
                     if (err) {
                         reject(err);
                     }
+                    console.log(fbRes);
                     fulfil(fbRes);
                 });
             });
         },
         request = function (endpoint) {
+            console.log('querying facebook for data...')
             return new rsvp.Promise(function (fulfil, reject) {
                 fb.get(endpoint, function (err, fbData) {
                     if (err) {
@@ -35,6 +40,7 @@ module.exports = function (config) {
                 }
                 else {
 
+                    console.log('logging into fb...');
                     res.redirect(fb.getOauthUrl({
                         client_id: config.client_id,
                         redirect_uri: config.redirect_uri,
@@ -42,28 +48,32 @@ module.exports = function (config) {
                     }));
                 }
             } else {
-                res.redirect('me_and_my_likes');
+                authorize(req.query.code)
+                    .then(function () {
+                        console.log('redirecting to root');
+                        res.redirect(returnPath);
+                    });
             }
         },
 
-        getFbData = function (req, res) {
-            if (!req.query.code) {
-                res.redirect('auth/facebook');
-                return;
-            }
+    scrapePage = function (req, res) {
+        if (!fb.getAccessToken()) {
+            console.log('no token. redirecting to login...');
+            returnPath = '/get/' + req.param('number');
+            res.redirect(config.redirect_uri);
+            return;
+        }
 
-            authorize(req.query.code)
-                .then(function () {
-                    return rsvp.all([
-                        request('/me'),
-                        request('/me/likes')])
-                })
-                .then(res.send.bind(res))
-                .catch(res.send.bind(res));
-        };
+        return request(req.param('number') + '/feed?include_hidden=true')
+            .then(res.send.bind(res))
+            .catch(function (res) {
+                    res.send.bind(res);
+                    console.log('error!');
+                    });
+    };
 
     return {
         fbLogin: loginToFb,
-        fbData: getFbData
+        fbPage: scrapePage,
     };
 };
