@@ -24,11 +24,11 @@ module.exports = function (config) {
                 });
         },
 
-        latest = function () {
+        latest = function (collection) {
             return new rsvp.Promise(
                 function promiseGetLatest(fulfil, reject) {
                     connectToDB().then(function dbReady(db) {
-                        var coll = db.collection('addition');
+                        var coll = db.collection(collection);
                         coll.find().sort({_id: -1}).limit(1)
                             .nextObject(function gotLatest(err, item) {
                                 if (err) reject(err);
