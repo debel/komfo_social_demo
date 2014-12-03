@@ -6,7 +6,7 @@ module.exports = function (model) {
                     latest = latest || {result: 0};
                     return {result: latest.result + n};
                 })
-                .then(model.insert)
+                .then(model.insert.bind(model, 'addition'))
                 .catch(function (err) {
                     throw err;
                 });
