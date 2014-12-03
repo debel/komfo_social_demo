@@ -1,5 +1,5 @@
 module.exports = function (model) {
-    var addition = function (number) {
+    var addition = function (collection, number) {
             var n = parseInt(number, 10);
             return model.latest()
                 .then(function doAddition(latest) {
@@ -11,7 +11,7 @@ module.exports = function (model) {
                     throw err;
                 });
         },
-        multiplication = function (number) {
+        multiplication = function (collection, number) {
             var n = parseInt(number, 10);
             return model.latest()
                 .then(function doMultiplication (latest){

@@ -7,7 +7,8 @@
     "express": "~4.10.4",
     "fbgraph": "~0.3.0",
     "mongodb": "~1.4.22",
-    "rsvp": "~3.0.14"
+    "rsvp": "~3.0.14",
+    "node-twitter-api": "~1.5.0"
   },
   "devDependencies": {
     "gulp": "^3.8.10"
